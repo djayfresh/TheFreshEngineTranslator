@@ -14,6 +14,7 @@ bool BinaryFileWirter::writeData(std::ostream& stream,const FileHeader& data)
 
 bool BinaryFileWirter::writeData(std::ostream& stream, const MeshData& data)
 {
+	stream << data.shapeName;
 	stream << data.numberOfVerts;
 	stream << data.numberOfIndices;
 	stream << data.numberOfTransforms;
@@ -79,6 +80,7 @@ bool BinaryFileWirter::writeData(std::ostream& stream,const LightsHeader& data)
 }
 bool BinaryFileWirter::writeData(std::ostream& stream,const GeometryTransform& data)
 {
+	stream << data.geometryName;
 	stream << data.position;
 	stream << data.rotation;
 	stream << data.scale;

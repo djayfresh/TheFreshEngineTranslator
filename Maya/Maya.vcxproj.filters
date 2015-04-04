@@ -44,5 +44,8 @@
     <ClInclude Include="MathVector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FileHandler\FileExport.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

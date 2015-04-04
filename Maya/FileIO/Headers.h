@@ -37,6 +37,7 @@ struct Vertex
 
 struct GeometryTransform
 {
+	const char* geometryName;
 	vec3 position;
 	vec3 rotation;
 	vec3 scale;
@@ -44,6 +45,7 @@ struct GeometryTransform
 
 struct MeshData
 {
+	const char* shapeName;
 	unsigned int numberOfVerts;
 	unsigned int numberOfIndices;
 	unsigned int numberOfTransforms;

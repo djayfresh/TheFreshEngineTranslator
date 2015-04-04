@@ -137,6 +137,7 @@
     <ClCompile Include="ShapeList.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FileHandler\FileExport.h" />
     <ClInclude Include="FileIO\BinaryFileWriter.h" />
     <ClInclude Include="FileIO\FileReader.h" />
     <ClInclude Include="FileIO\FileWriter.h" />
