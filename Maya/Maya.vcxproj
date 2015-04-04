@@ -132,8 +132,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="FileIO\BinaryFileWriter.cpp" />
     <ClCompile Include="hello.cpp" />
     <ClCompile Include="ShapeList.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="FileIO\BinaryFileWriter.h" />
+    <ClInclude Include="FileIO\FileReader.h" />
+    <ClInclude Include="FileIO\FileWriter.h" />
+    <ClInclude Include="FileIO\Headers.h" />
+    <ClInclude Include="MathVector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

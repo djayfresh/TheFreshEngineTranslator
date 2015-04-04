@@ -6,6 +6,12 @@
 *.exe
 *.o
 *.so
+*.opensdf
+*.sdf
+
+# Maya Plug-in #
+################
+*.mll
  
 # Packages #
 ############
@@ -36,5 +42,7 @@
 ehthumbs.db
 Thumbs.db
 
+# Qt Files/Library #
+####################
 .qt*
 /qt*

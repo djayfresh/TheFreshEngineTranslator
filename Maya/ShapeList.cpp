@@ -8,6 +8,15 @@
 #include <maya/MItDag.h>
 #include <maya/MPxTransformationMatrix.h>
 
+/**
+* When adding a kMesh iterator using inclusiveMatrix returns even Parented transforms to world space.
+* dag.name() is the mesh name (name'shape') not the transform name. This way shapes of the same mesh 
+* can be grouped for tranlations only, and not duplicate mesh data. 
+* A new type of file will need to be created. Not only does each header section need a unquie value 
+* to distingush header types, but an addition head slot pointing to end header groups would allow 
+* for future expansion, or new headers. Some types to consider our Lights and Cameras.
+/**/
+
 class ShapeList : public MPxCommand
 {
 public:
@@ -32,7 +41,7 @@ MStatus ShapeList::doScan()
 	uint objectCount = 0;
 	MStatus status;
 
-	MItDag dagIterator(MItDag::kDepthFirst, MFn::kShape, &status);
+	MItDag dagIterator(MItDag::kDepthFirst, MFn::kMesh, &status);
 	if(!status)
 	{
 		status.perror("MItDag::dagIterator");
@@ -58,10 +67,7 @@ MStatus ShapeList::doScan()
 		cout << dagNode.name().asChar() << ": " << dagNode.typeName().asChar() << endl;
 		cout << " dagPath: " << dagPath.fullPathName().asChar() << endl;
 		//**
-		if(dagPath.hasFn(MFn::kTransform))
-		{
-			printTransformData(dagPath);
-		}
+		printTransformData(dagPath);
 		//**/
 		cout << endl;
 		objectCount += 1;
@@ -76,16 +82,18 @@ void ShapeList::printTransformData(const MDagPath& path)
 	//**
 	//This method simply determines the transformation information on the DAG node and prints it out.
     MStatus status;
-    MObject transformNode = path.transform(&status);
+	MMatrix transformNode = path.inclusiveMatrix(&status);
     // This node has no transform - i.e., it’s the world node
     if (!status && status.statusCode () == MStatus::kInvalidParameter)
         return;
+	/**
     MFnDagNode transform (transformNode, &status);
     if (!status) {
         status.perror("MFnDagNode constructor");
         return;
     }
-    MTransformationMatrix matrix (transform.transformationMatrix());
+	//**/
+	MTransformationMatrix matrix (transformNode); //(transform.transformationMatrix())
 	MVector translation = matrix.translation(MSpace::kWorld);
 	cout << " translation: ["
 			<< translation.x << ", "
