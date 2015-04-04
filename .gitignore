@@ -42,6 +42,12 @@
 ehthumbs.db
 Thumbs.db
 
+# Debug #
+#########
+/x64
+/Debug
+
+
 # Qt Files/Library #
 ####################
 .qt*
