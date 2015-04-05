@@ -204,17 +204,22 @@ Header** BinaryFileReader::readHeader(std::ifstream& stream, const AdditionalHea
 	if(header->numberOfAdditonalHeaders > 0)
 	{
 		uint headerStart = (uint) stream.tellg();
-		Header** headers = new Header*[header->numberOfAdditonalHeaders];
+		char* headerPrt = new char[sizeof(Header*) * header->numberOfAdditonalHeaders];
+
+		stream.seekg((uint)header->headers);
+		stream.read(headerPrt, sizeof(Header*) * header->numberOfAdditonalHeaders);
+		Header** headers = r_c(Header**, headerPrt);
 		char* headerTypes = new char[sizeof(uint)];
+		uint headerLocation;
 		for(int i = 0; i < header->numberOfAdditonalHeaders; i++)
 		{
-			stream.seekg((uint)header->headers[i]);
-			uint headerStartThis = (uint)stream.tellg();
+			headerLocation = (uint)headers[i];
+			stream.seekg(headerLocation);
 
-			stream.read(headerTypes, sizeof(uint));
-			stream.seekg(headerStartThis);
-
-			uint headerType = (uint) headerTypes;
+			stream.read(headerTypes, sizeof(Header));
+			stream.seekg(headerLocation);
+			Header* headerTmp = r_c(Header*, headerTypes);
+			uint headerType = headerTmp->type;
 			switch(headerType)
 			{
 			case HeaderTypes::Mesh:
@@ -234,7 +239,8 @@ Header** BinaryFileReader::readHeader(std::ifstream& stream, const AdditionalHea
 				break;
 			}
 		}
+		delete headerTypes;
 		return headers;
-		}
+	}
 	return NULL;
 }

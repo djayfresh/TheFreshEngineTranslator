@@ -155,7 +155,33 @@ namespace Testing
 
 		AdditionalHeader* createAdditionalHeader()
 		{
-			return new AdditionalHeader();
+			AdditionalHeader* header = new AdditionalHeader();
+			header->numberOfAdditonalHeaders = 4;
+			if(header->numberOfAdditonalHeaders > 0)
+			{
+				header->headers = new Header*[header->numberOfAdditonalHeaders];
+				for(uint i = 0; i < header->numberOfAdditonalHeaders; i++)
+				{
+					if(i == 0)
+					{
+						header->headers[i] = createMeshHeader();
+					}
+					else if(i == 1)
+					{
+						header->headers[i] = createTextureHeader();
+					}
+					else
+					{
+						header->headers[i] = createLightsHeader();
+					}
+				}
+			}
+			else
+			{
+				header->headers = NULL;
+			}
+
+			return header;
 		}
 	};
 }

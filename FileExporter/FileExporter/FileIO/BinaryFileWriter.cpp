@@ -215,22 +215,32 @@ bool BinaryFileWriter::writeData(std::ofstream& stream, Header* data)
 
 bool BinaryFileWriter::writeData(std::ofstream& stream,const AdditionalHeader& data)
 {
-	stream.write(r_c(const char*,&data.type), sizeof(unsigned int));
-	stream.write(r_c(const char*,&data.numberOfAdditonalHeaders), sizeof(unsigned int));
+	AdditionalHeader header = data;
+	uint headerStart = stream.tellp();
+
+	stream.seekp(headerStart + sizeof(AdditionalHeader));
+
 	bool success = false;
+	uint headerLocation;
 	for(unsigned int i =0; i < data.numberOfAdditonalHeaders; i++)
 	{
-		success = writeData(stream, &*data.headers[i]);
+		headerLocation = (uint) stream.tellp();
+		success = writeData(stream, data.headers[i]);
+		header.headers[i] = r_c(Header*, headerLocation);
 		if(!success)
 		{
 			return false;
 		}
 	}
+	uint headerPtr = (uint) stream.tellp();
+	stream.write(r_c(char*, header.headers), sizeof(Header*) * data.numberOfAdditonalHeaders);
+	header.headers = r_c(Header**, headerPtr);
 
-	if(data.numberOfAdditonalHeaders == 0)
-	{
-		stream << NULL;
-	}
+	uint end = (uint) stream.tellp();
+
+	stream.seekp(headerStart);
+	stream.write(r_c(char*, &header), sizeof(AdditionalHeader));
+	stream.seekp(end);
 
 	return true;
 }
