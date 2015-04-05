@@ -8,10 +8,10 @@ FileHeader BinaryFileReader::readFileHeader(std::ifstream& stream)
 	FileHeader file = *r_c(FileHeader*, buf);
 
 	/*Find the location of each pointer within the file*/
-	int meshP = (int)( file.meshes);
-	int lightP = r_c(int, file.lights);
-	int textureP = r_c(int, file.textures);
-	int additionalP = r_c(int, file.additionalHeaders);
+	uint meshP = (uint)( file.meshes);
+	uint lightP = r_c(uint, file.lights);
+	uint textureP = r_c(uint, file.textures);
+	uint additionalP = r_c(uint, file.additionalHeaders);
 
 	/*Move the stream to the proper header location, let it read the data*/
 	stream.seekg(meshP);
@@ -30,33 +30,26 @@ FileHeader BinaryFileReader::readFileHeader(std::ifstream& stream)
 	
 MeshData* BinaryFileReader::readMeshData(std::ifstream& stream)
 {
-	/*Names is going to offset the file!! O.O*/
-	char* oneByte = new char();
-	stream.read(oneByte, sizeof(unsigned int));
-	unsigned int nameLength = *(unsigned int*) oneByte;
-	char* nameBuff = new char[nameLength];
-	stream.getline(nameBuff, nameLength);
-	/*Only read to where verts is written*/
-	char* buf = new char[MeshData::Vertex_Offset];
-	stream.read(buf, sizeof(MeshData::Vertex_Offset));
-	MeshData* mesh = new MeshData();
-	mesh->shapeName = nameBuff;
-	mesh->numberOfIndices = *r_c(unsigned int*,buf + MeshData::Num_Of_Indices_Offset);
-	mesh->numberOfVerts = *r_c(unsigned int*,buf + MeshData::Num_Of_Verts_Offset);
-	mesh->numberOfTransforms = *r_c(unsigned int*,buf + MeshData::Num_Of_Transforms_Offset);
-	delete buf;
+	char* buf = new char[sizeof(MeshData)];
+	stream.read(buf, sizeof(MeshData));
+
+	MeshData* mesh = r_c(MeshData*, buf);
+
 	/*Vertex*/
+	stream.seekg((uint)mesh->verts);
 	int buffSize = sizeof(Vertex) * mesh->numberOfVerts;
 	char* buffer = new char[buffSize];
 	stream.read(buffer, buffSize);
 	mesh->verts = r_c(Vertex*, buffer);
 	/*Indices*/
+	stream.seekg((uint)mesh->indices);
 	buffSize = sizeof(unsigned int) * mesh->numberOfIndices;
 	buffer = new char[buffSize];
 	stream.read(buffer, buffSize);
 	mesh->indices = r_c(unsigned int*, buffer);
 
 	/*Transform*/
+	stream.seekg((uint)mesh->transforms);
 	GeometryTransform* transforms = new GeometryTransform[mesh->numberOfTransforms];
 	GeometryTransform* tmp;
 	for(unsigned int i = 0; i < mesh->numberOfTransforms; i++)
@@ -64,28 +57,28 @@ MeshData* BinaryFileReader::readMeshData(std::ifstream& stream)
 		memcpy(&transforms[i], tmp = readGeometryTransform(stream), sizeof(GeometryTransform));
 		delete tmp;
 	}
-	buffer = new char[buffSize];
-	stream.read(buffer, buffSize);
-	mesh->indices = r_c(unsigned int*, buffer);
 
+	buffer = new char[mesh->nameLength];
+	stream.seekg((uint)mesh->shapeName);
+	stream.read(buffer, buffSize);
+	mesh->shapeName = buffer;
+	
 	return mesh;
 }
 
 GeometryTransform* BinaryFileReader::readGeometryTransform(std::ifstream& stream)
 {
-	char* name = new char[16];
-	stream.getline(name, 16);
-	GeometryTransform* geo = new GeometryTransform();
-	geo->geometryName = name;
-	/*Remove the pointer for name*/
-	char* buff = new char[sizeof(GeometryTransform) - 4];
-	stream.read(buff, sizeof(GeometryTransform) - 4);
+	char* buff = new char[sizeof(GeometryTransform)];
 
-	geo->position = *r_c(vec3*, buff + GeometryTransform::Position_Offset);
-	geo->rotation = *r_c(vec3*, buff + GeometryTransform::Rotation_Offset);
-	geo->scale = *r_c(vec3*, buff + GeometryTransform::Scale_Offset);
+	stream.read(buff, sizeof(GeometryTransform));
+	GeometryTransform* geo = r_c(GeometryTransform*, buff);
 
-	delete buff;
+	stream.seekg((uint)geo->geometryName);
+
+	char* data = new char[geo->nameLength];
+	stream.read(data, geo->nameLength);
+
+	geo->geometryName = data;
 
 	return geo;
 }
@@ -94,8 +87,8 @@ MeshDataHeader* BinaryFileReader::readMeshDataHeader(std::ifstream& stream)
 	char* buf = new char[sizeof(MeshDataHeader)];
 	stream.read(buf, sizeof(MeshDataHeader));
 	MeshDataHeader* meshHeader = r_c(MeshDataHeader*, buf);
-	unsigned int meshP = r_c(unsigned int, meshHeader->meshes);
-	stream.seekg(meshP);
+
+	stream.seekg((uint)meshHeader->meshes);
 	MeshData* meshData = new MeshData[meshHeader->numberOfMeshes];
 	MeshData* tmp;
 	for(unsigned int i = 0; i < meshHeader->numberOfMeshes; i++)
@@ -104,7 +97,7 @@ MeshDataHeader* BinaryFileReader::readMeshDataHeader(std::ifstream& stream)
 		delete tmp;
 	}
 	meshHeader->meshes = meshData;
-	delete buf;
+
 	return meshHeader;
 }
 	

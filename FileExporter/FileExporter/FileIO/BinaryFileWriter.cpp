@@ -237,6 +237,6 @@ bool BinaryFileWriter::writeData(std::ofstream& stream,const AdditionalHeader& d
 
 bool BinaryFileWriter::writeData(std::ofstream& stream, const char* name)
 {
-	stream.write(name, strlen(name));
+	stream.write(name, strlen(name) + 1);
 	return true;
 }
