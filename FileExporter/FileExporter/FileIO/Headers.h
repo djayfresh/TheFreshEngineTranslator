@@ -122,7 +122,7 @@ struct AdditionalHeader : Header
 {
 	AdditionalHeader() : Header(Additional), numberOfAdditonalHeaders(0), headers(NULL) {}
 	unsigned int numberOfAdditonalHeaders;
-	Header* headers;
+	Header** headers;
 };
 
 struct FileHeader

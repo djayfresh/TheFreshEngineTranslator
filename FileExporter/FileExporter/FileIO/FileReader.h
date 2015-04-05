@@ -27,6 +27,9 @@ public:
 	
 	virtual Texture* readTexture(std::ifstream& stream) = 0;
 	virtual TextureHeader* readTextureHeader(std::ifstream& stream) = 0;
+
+	virtual Header** readHeader(std::ifstream& stream, const AdditionalHeader* header) = 0;
+
 };
 
 #endif /* FILE_READER_H */

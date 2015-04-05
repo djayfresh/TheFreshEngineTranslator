@@ -220,7 +220,7 @@ bool BinaryFileWriter::writeData(std::ofstream& stream,const AdditionalHeader& d
 	bool success = false;
 	for(unsigned int i =0; i < data.numberOfAdditonalHeaders; i++)
 	{
-		success = writeData(stream, &data.headers[i]);
+		success = writeData(stream, &*data.headers[i]);
 		if(!success)
 		{
 			return false;

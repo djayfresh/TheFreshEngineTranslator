@@ -112,14 +112,45 @@ namespace Testing
 		LightsHeader* createLightsHeader()
 		{
 			LightsHeader* lights = new LightsHeader();
-			lights->lights = NULL;
-			lights->numberOfLights = 0;
+			lights->numberOfLights = 3;
+			lights->lights = createLightsArray(lights->numberOfLights);
 			return lights;
+		}
+
+		Light* createLightsArray(int count)
+		{
+			Light* lights = new Light[count];
+			for(uint i = 0; i < count; i++)
+			{
+				lights[i].position = vec3(i, i, i);
+			}
+			return lights;
+		}
+
+		Texture* createTexturesArray(int count)
+		{
+			Texture* textures = new Texture[count];
+
+			for(uint i =0; i < count; i++)
+			{
+				textures[i].textureName = "AVeryCoolTexture.jpg";
+				textures[i].nameLength = stringLength(textures[i].textureName);
+				textures[i].height = i * 10;
+				textures[i].width = i * 40;
+				textures[i].textureDataLength = 0;
+				textures[i].textureData = NULL;
+			}
+
+			return textures;
 		}
 
 		TextureHeader* createTextureHeader()
 		{
-			return new TextureHeader();
+			TextureHeader* header = new TextureHeader();
+			header->numberOfTextures = 1;
+			header->textures = createTexturesArray(header->numberOfTextures);
+
+			return header; 
 		}
 
 		AdditionalHeader* createAdditionalHeader()

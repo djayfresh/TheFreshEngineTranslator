@@ -20,6 +20,8 @@ public:
 	
 	Texture* readTexture(std::ifstream& stream);
 	TextureHeader* readTextureHeader(std::ifstream& stream);
+	
+	Header** readHeader(std::ifstream& stream, const AdditionalHeader* header);
 };
 
 #endif /* BINARY_FILE_READER_H*/
