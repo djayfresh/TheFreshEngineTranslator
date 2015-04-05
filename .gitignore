@@ -48,6 +48,8 @@ Thumbs.db
 /Debug
 /*/x64
 /*/Debug
+*.tlog
+*.exp
 
 
 # Qt Files/Library #
