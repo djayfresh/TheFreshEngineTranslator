@@ -7,6 +7,10 @@
 #define uint unsigned int
 #endif
 
+#ifndef stringLength(string)
+#define stringLength(string) strlen(string) + sizeof(char)
+#endif
+
 struct DLL_SHARED vec3
 {
 	float x;

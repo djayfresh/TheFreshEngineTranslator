@@ -57,10 +57,11 @@ MeshData* BinaryFileReader::readMeshData(std::ifstream& stream)
 		memcpy(&transforms[i], tmp = readGeometryTransform(stream), sizeof(GeometryTransform));
 		delete tmp;
 	}
+	mesh->transforms = transforms;
 
 	buffer = new char[mesh->nameLength];
 	stream.seekg((uint)mesh->shapeName);
-	stream.read(buffer, buffSize);
+	stream.read(buffer, mesh->nameLength);
 	mesh->shapeName = buffer;
 	
 	return mesh;
