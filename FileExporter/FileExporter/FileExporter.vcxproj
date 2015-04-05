@@ -80,6 +80,7 @@
   <ItemGroup>
     <ClInclude Include="ExportHeader.h" />
     <ClInclude Include="FileHandler\FileExport.h" />
+    <ClInclude Include="FileIO\BinaryFileReader.h" />
     <ClInclude Include="FileIO\BinaryFileWriter.h" />
     <ClInclude Include="FileIO\FileReader.h" />
     <ClInclude Include="FileIO\FileWriter.h" />
@@ -87,6 +88,7 @@
     <ClInclude Include="MathVector.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FileIO\BinaryFileReader.cpp" />
     <ClCompile Include="FileIO\BinaryFileWriter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -36,9 +36,15 @@
     <ClInclude Include="ExportHeader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="FileIO\BinaryFileReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FileIO\BinaryFileWriter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FileIO\BinaryFileReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -5,7 +5,6 @@
 #include "Headers.h"
 #include "../ExportHeader.h"
 
-
 #ifndef r_c(type,src)
 #define r_c(type,src) reinterpret_cast<type>(src)
 #endif

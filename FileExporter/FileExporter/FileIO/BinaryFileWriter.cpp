@@ -2,8 +2,6 @@
 #include <iostream>
 #include <fstream>
 
-
-
 bool BinaryFileWriter::writeData(std::ofstream& stream,const FileHeader& data)
 {
 	stream << data.fileType;

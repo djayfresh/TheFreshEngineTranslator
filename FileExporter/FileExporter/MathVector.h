@@ -1,8 +1,9 @@
 #ifndef MATH_MAYA_H
 #define MATH_MAYA_H
+#include "ExportHeader.h"
 #include <iostream>
 
-struct vec3
+struct DLL_SHARED vec3
 {
 	float x;
 	float y;
@@ -12,13 +13,13 @@ struct vec3
 	vec3(float d[3]) : x(d[0]), y(d[1]), z(d[2]) {}
 };
 
-std::ostream& operator<<(std::ostream& ost, const vec3& vec)
+inline std::ostream& operator<<(std::ostream& ost, const vec3& vec)
 {
 	ost << vec.x << vec.y << vec.z;
 	return ost;
 }
 
-struct vec4
+struct DLL_SHARED vec4
 {
 	float x;
 	float y;
@@ -30,13 +31,13 @@ struct vec4
 
 };
 
-std::ostream& operator<<(std::ostream& ost, const vec4& vec)
+inline std::ostream& operator<<(std::ostream& ost, const vec4& vec)
 {
 	ost << vec.x << vec.y << vec.z << vec.w;
 	return ost;
 }
 
-struct vec2
+struct DLL_SHARED vec2
 {
 	float x;
 	float y;
@@ -46,7 +47,7 @@ struct vec2
 
 };
 
-std::ostream& operator<<(std::ostream& ost, const vec2& vec)
+inline std::ostream& operator<<(std::ostream& ost, const vec2& vec)
 {
 	ost << vec.x << vec.y;
 	return ost;

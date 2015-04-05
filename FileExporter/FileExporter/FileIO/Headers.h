@@ -37,14 +37,20 @@ struct Vertex
 
 struct GeometryTransform
 {
+	/*Max Name length is 16*/
 	const char* geometryName;
 	vec3 position;
 	vec3 rotation;
-	vec3 scale;
+	vec3 scale; //12
+
+	static const unsigned int Position_Offset = 0; //Set to zero, ignoring name
+	static const unsigned int Rotation_Offset = 12;
+	static const unsigned int Scale_Offset = 24;
 };
 
 struct MeshData
 {
+	/*Max Name length is 16*/
 	const char* shapeName;
 	unsigned int numberOfVerts;
 	unsigned int numberOfIndices;
@@ -52,6 +58,14 @@ struct MeshData
 	Vertex* verts;
 	unsigned int* indices;
 	GeometryTransform* transforms;
+
+	
+	static const unsigned int Num_Of_Verts_Offset = 0;
+	static const unsigned int Num_Of_Indices_Offset = 4;
+	static const unsigned int Num_Of_Transforms_Offset = 8;
+	static const unsigned int Vertex_Offset = 12;
+	static const unsigned int Indices_Offset = 16;
+	static const unsigned int Transforms_Offset = 20;
 };
 
 struct MeshDataHeader : Header
@@ -59,6 +73,9 @@ struct MeshDataHeader : Header
 	MeshDataHeader() : Header(Mesh), numberOfMeshes(0), meshes(NULL) {}
 	unsigned int numberOfMeshes;
 	MeshData* meshes;
+
+	static const unsigned int Num_Of_Meshes_Offset = 4;
+	static const unsigned int Mesh_Data_Offset = 8;
 };
 
 
@@ -113,6 +130,10 @@ struct FileHeader
 	FileHeader() : fileType(0), meshes(NULL), lights(NULL), textures(NULL), additionalHeaders(NULL) {}
 	FileHeader(unsigned int fileType, MeshDataHeader* mesh, LightsHeader* light, TextureHeader* texture, AdditionalHeader* additionalHeaders) : fileType(fileType), meshes(mesh), lights(light), textures(texture), additionalHeaders(additionalHeaders) {}
 
+	static const unsigned int MeshHeaderOffset = 4;
+	static const unsigned int LightHeaderOffset = 8;
+	static const unsigned int TextureHeaderOffset = 12;
+	static const unsigned int AdditionalHeaderOffset = 16;
 };
 
 #endif /* HEADERS_MAYA_H */
