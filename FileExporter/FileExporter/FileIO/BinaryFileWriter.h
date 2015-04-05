@@ -18,6 +18,8 @@ public:
 	bool writeData(std::ofstream& stream,const TextureHeader& data);
 	bool writeData(std::ofstream& stream,const AdditionalHeader& data);
 	bool writeData(std::ofstream& stream, Header* data);
+protected:
+	bool writeData(std::ofstream& stream,const char* name);
 };
 
 #endif /*BINARY_FILE_WRITER_H*/

@@ -3,6 +3,10 @@
 #include "ExportHeader.h"
 #include <iostream>
 
+#ifndef uint
+#define uint unsigned int
+#endif
+
 struct DLL_SHARED vec3
 {
 	float x;

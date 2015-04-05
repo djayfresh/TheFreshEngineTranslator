@@ -4,11 +4,10 @@
 
 bool BinaryFileWriter::writeData(std::ofstream& stream,const FileHeader& data)
 {
-	stream << data.fileType;
-	int meshP = stream.tellp();
+	int fileStart = stream.tellp();
 
 	/*Move to the end of the FileHeader*/
-	stream.seekp(sizeof(FileHeader) - sizeof(data.fileType));
+	stream.seekp(fileStart + sizeof(FileHeader));
 
 	/*Write and store locations to each header*/
 	int meshDataP = stream.tellp();
@@ -21,25 +20,29 @@ bool BinaryFileWriter::writeData(std::ofstream& stream,const FileHeader& data)
 	writeData(stream, data.additionalHeaders);
 	int fileEnd = stream.tellp();
 
+	FileHeader tmp(data.fileType, r_c(MeshDataHeader*,meshDataP), r_c(LightsHeader*,lightsP),
+		r_c(TextureHeader*, textureP), r_c(AdditionalHeader*, additonalP));
+
 	/*Write locations in file to pointers*/
-	stream.seekp(meshP);
-	stream << meshDataP;
-	stream << lightsP;
-	stream << textureP;
-	stream << additonalP;
+	stream.seekp(fileStart);
+	stream.write(r_c(char*,&tmp), sizeof(FileHeader));
 	stream.seekp(fileEnd);
 	return true;
 }
 
 bool BinaryFileWriter::writeData(std::ofstream& stream, const MeshData& data)
 {
-	stream.write(data.shapeName, strlen(data.shapeName));
-	stream << data.numberOfVerts;
-	stream << data.numberOfIndices;
-	stream << data.numberOfTransforms;
+	MeshData header = data;
+	uint headerStart = (uint)stream.tellp();
+	stream.seekp(headerStart + sizeof(MeshData));
+
+	header.verts = r_c(Vertex*, (uint) stream.tellp());
 	stream.write(r_c(char*,data.verts), sizeof(Vertex) * data.numberOfVerts);
+
+	header.indices = r_c(uint*, (uint) stream.tellp());
 	stream.write(r_c(char*,data.indices), sizeof(unsigned int) * data.numberOfIndices);
 
+	header.transforms = r_c(GeometryTransform*, (uint) stream.tellp());
 	bool success = false;
 	for(unsigned int i = 0; i < data.numberOfTransforms; i++)
 	{
@@ -49,10 +52,14 @@ bool BinaryFileWriter::writeData(std::ofstream& stream, const MeshData& data)
 			return false;
 		}
 	}
-	if(data.numberOfTransforms == 0)
-	{
-		stream << NULL;
-	}
+	header.shapeName = r_c(const char*, (uint) stream.tellp());
+	writeData(stream, data.shapeName);
+
+	uint end = (uint) stream.tellp();
+
+	stream.seekp(headerStart);
+	stream.write(r_c(char*, &header), sizeof(MeshData));
+	stream.seekp(end);
 
 	return true;
 }
@@ -60,8 +67,10 @@ bool BinaryFileWriter::writeData(std::ofstream& stream, const MeshData& data)
 bool BinaryFileWriter::writeData(std::ofstream& stream,const MeshDataHeader& data)
 {
 	MeshDataHeader header = data;
-	stream << data.type;
-	stream << data.numberOfMeshes;
+	uint headerStart = (uint) stream.tellp();
+
+	stream.seekp(headerStart + sizeof(MeshDataHeader));
+	header.meshes = r_c(MeshData*, (uint)stream.tellp());
 	bool success = false;
 	for(unsigned int i = 0; i < data.numberOfMeshes; i++)
 	{
@@ -71,10 +80,11 @@ bool BinaryFileWriter::writeData(std::ofstream& stream,const MeshDataHeader& dat
 			return false;
 		}
 	}
-	if(data.numberOfMeshes == 0)
-	{
-		stream << NULL;
-	}
+	uint end = (uint) stream.tellp();
+
+	stream.seekp(headerStart);
+	stream.write(r_c(char*,&header), sizeof(MeshDataHeader));
+	stream.seekp(end);
 
 	return true;
 }
@@ -82,16 +92,17 @@ bool BinaryFileWriter::writeData(std::ofstream& stream,const MeshDataHeader& dat
 
 bool BinaryFileWriter::writeData(std::ofstream& stream,const Light& data)
 {
-	stream.write(r_c(const char*,&data.position), sizeof(vec3));
-	stream.write(r_c(const char*,&data.color), sizeof(vec4));
-	stream << data.intensity;
-
+	Light light = data;
+	stream.write(r_c(char*,&light), sizeof(Light));
 	return true;
 }
 bool BinaryFileWriter::writeData(std::ofstream& stream,const LightsHeader& data)
 {
-	stream << data.type;
-	stream << data.numberOfLights;
+	LightsHeader header = data;
+	uint headerStart = (uint) stream.tellp();
+
+	stream.seekp(headerStart + sizeof(LightsHeader));
+	header.lights = r_c(Light*, (uint) stream.tellp());
 	bool success = false;
 	for(unsigned int i = 0; i < data.numberOfLights; i++)
 	{
@@ -101,37 +112,65 @@ bool BinaryFileWriter::writeData(std::ofstream& stream,const LightsHeader& data)
 			return false;
 		}
 	}
+	uint end = (uint)stream.tellp();
 
-	if(data.numberOfLights == 0)
-	{
-		stream << NULL;
-	}
+
+	stream.seekp(headerStart);
+	stream.write(r_c(char*,&header), sizeof(LightsHeader));
+	stream.seekp(end);
 
 	return true;
 }
 bool BinaryFileWriter::writeData(std::ofstream& stream,const GeometryTransform& data)
 {
-	stream.write(data.geometryName, strlen(data.geometryName));
-	stream.write(r_c(const char*,&data.position), sizeof(vec3));
-	stream.write(r_c(const char*,&data.rotation), sizeof(vec3));
-	stream.write(r_c(const char*,&data.scale), sizeof(vec3));
+	GeometryTransform geo = data;
+	uint headerStart = (uint) stream.tellp();
+
+	stream.seekp(headerStart + sizeof(GeometryTransform));
+
+	geo.geometryName = r_c(const char*, (uint)stream.tellp());
+	writeData(stream, data.geometryName);
+
+	uint end = (uint) stream.tellp();
+
+	stream.seekp(headerStart);
+	stream.write(r_c(char*, &geo), sizeof(GeometryTransform));
+	stream.seekp(end);
 
 	return true;
 }
 bool BinaryFileWriter::writeData(std::ofstream& stream,const Texture& data)
 {
-	stream.write(data.textureName, strlen(data.textureName));
-	stream << data.textureDataLength;
+	Texture text = data;
+	uint headerStart = (uint) stream.tellp();
+
+	//Write pointers at end of header
+	stream.seekp(headerStart + sizeof(Texture));
+
+	text.textureData = r_c(void*, (uint)stream.tellp());
 	stream.write(r_c(char*,data.textureData), data.textureDataLength);
-	stream << data.width;
-	stream << data.height;
+
+	text.textureName = r_c(const char*, (uint)stream.tellp());
+	writeData(stream, data.textureName);
+
+	uint end = (uint) stream.tellp();
+
+	//Write header
+	stream.seekp(headerStart);
+	stream.write(r_c(char*, &text), sizeof(Texture));
+	stream.seekp(end);
 
 	return true;
 }
 bool BinaryFileWriter::writeData(std::ofstream& stream,const TextureHeader& data)
 {
-	stream << data.type;
-	stream << data.numberOfTextures;
+	TextureHeader header = data;
+	uint headerStart = (uint) stream.tellp();
+
+	stream.seekp(headerStart + sizeof(TextureHeader));
+
+	header.textures = r_c(Texture*, (uint)stream.tellp());
+
 	bool success = false;
 	for(unsigned int i =0; i < data.numberOfTextures; i++)
 	{
@@ -141,11 +180,12 @@ bool BinaryFileWriter::writeData(std::ofstream& stream,const TextureHeader& data
 			return false;
 		}
 	}
-	
-	if(data.numberOfTextures == 0)
-	{
-		stream << NULL;
-	}
+
+	uint end = stream.tellp();
+
+	stream.seekp(headerStart);
+	stream.write(r_c(char*, &header), sizeof(TextureHeader));
+	stream.seekp(end);
 
 	return true;
 }
@@ -175,8 +215,8 @@ bool BinaryFileWriter::writeData(std::ofstream& stream, Header* data)
 
 bool BinaryFileWriter::writeData(std::ofstream& stream,const AdditionalHeader& data)
 {
-	stream << data.type;
-	stream << data.numberOfAdditonalHeaders;
+	stream.write(r_c(const char*,&data.type), sizeof(unsigned int));
+	stream.write(r_c(const char*,&data.numberOfAdditonalHeaders), sizeof(unsigned int));
 	bool success = false;
 	for(unsigned int i =0; i < data.numberOfAdditonalHeaders; i++)
 	{
@@ -192,5 +232,11 @@ bool BinaryFileWriter::writeData(std::ofstream& stream,const AdditionalHeader& d
 		stream << NULL;
 	}
 
+	return true;
+}
+
+bool BinaryFileWriter::writeData(std::ofstream& stream, const char* name)
+{
+	stream.write(name, strlen(name));
 	return true;
 }

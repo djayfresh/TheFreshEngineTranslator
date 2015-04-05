@@ -4,14 +4,14 @@ FileHeader BinaryFileReader::readFileHeader(std::ifstream& stream)
 {
 	char* buf = new char[sizeof(FileHeader)];
 	stream.read(buf, sizeof(FileHeader));
-	FileHeader file;
 	/*Type will one day be used for different header versions*/
-	file.fileType = *r_c(unsigned int*, buf);
+	FileHeader file = *r_c(FileHeader*, buf);
+
 	/*Find the location of each pointer within the file*/
-	int meshP = *r_c(unsigned int*, buf + FileHeader::MeshHeaderOffset);
-	int lightP = *r_c(unsigned int*, buf + FileHeader::LightHeaderOffset);
-	int textureP = *r_c(unsigned int*, buf + FileHeader::TextureHeaderOffset);
-	int additionalP = *r_c(unsigned int*, buf + FileHeader::AdditionalHeaderOffset);
+	int meshP = (int)( file.meshes);
+	int lightP = r_c(int, file.lights);
+	int textureP = r_c(int, file.textures);
+	int additionalP = r_c(int, file.additionalHeaders);
 
 	/*Move the stream to the proper header location, let it read the data*/
 	stream.seekg(meshP);
@@ -31,11 +31,14 @@ FileHeader BinaryFileReader::readFileHeader(std::ifstream& stream)
 MeshData* BinaryFileReader::readMeshData(std::ifstream& stream)
 {
 	/*Names is going to offset the file!! O.O*/
-	char* nameBuff = new char[16];
-	stream.getline(nameBuff, 16);
+	char* oneByte = new char();
+	stream.read(oneByte, sizeof(unsigned int));
+	unsigned int nameLength = *(unsigned int*) oneByte;
+	char* nameBuff = new char[nameLength];
+	stream.getline(nameBuff, nameLength);
 	/*Only read to where verts is written*/
 	char* buf = new char[MeshData::Vertex_Offset];
-	stream.read(buf, sizeof(MeshData));
+	stream.read(buf, sizeof(MeshData::Vertex_Offset));
 	MeshData* mesh = new MeshData();
 	mesh->shapeName = nameBuff;
 	mesh->numberOfIndices = *r_c(unsigned int*,buf + MeshData::Num_Of_Indices_Offset);
@@ -90,15 +93,8 @@ MeshDataHeader* BinaryFileReader::readMeshDataHeader(std::ifstream& stream)
 {
 	char* buf = new char[sizeof(MeshDataHeader)];
 	stream.read(buf, sizeof(MeshDataHeader));
-	MeshDataHeader* meshHeader = new MeshDataHeader();
-	unsigned int type = *r_c(unsigned int*, buf);
-	if(type != meshHeader->type)
-	{
-		std::cout << "Wrong header type - MeshDataHeader: "<< stream.tellg() << std::endl;
-		return NULL;
-	}
-	meshHeader->numberOfMeshes = *r_c(unsigned int*, buf + MeshDataHeader::Num_Of_Meshes_Offset);
-	unsigned int meshP = *r_c(unsigned int*, buf + MeshDataHeader::Mesh_Data_Offset);
+	MeshDataHeader* meshHeader = r_c(MeshDataHeader*, buf);
+	unsigned int meshP = r_c(unsigned int, meshHeader->meshes);
 	stream.seekg(meshP);
 	MeshData* meshData = new MeshData[meshHeader->numberOfMeshes];
 	MeshData* tmp;

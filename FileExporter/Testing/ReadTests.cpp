@@ -14,6 +14,7 @@ namespace Testing
 		TEST_METHOD(ReadFile)
 		{
 			std::ifstream file("test1.bin", std::ios::binary | std::ios::in);
+			file.seekg(0);
 			BinaryFileReader reader;
 			FileHeader fileHeader = reader.readFileHeader(file);
 			Assert::AreEqual(0, (int)fileHeader.fileType);

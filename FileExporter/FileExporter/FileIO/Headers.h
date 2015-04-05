@@ -19,8 +19,8 @@ enum HeaderTypes
 
 struct Header
 {
-	Header(HeaderTypes type) : type(type) {}
-	HeaderTypes type;
+	Header(HeaderTypes type) : type((int)type) {}
+	int type;
 };
 
 struct Vertex
@@ -37,35 +37,40 @@ struct Vertex
 
 struct GeometryTransform
 {
-	/*Max Name length is 16*/
-	const char* geometryName;
+	unsigned int nameLength;
 	vec3 position;
 	vec3 rotation;
-	vec3 scale; //12
-
-	static const unsigned int Position_Offset = 0; //Set to zero, ignoring name
-	static const unsigned int Rotation_Offset = 12;
-	static const unsigned int Scale_Offset = 24;
+	vec3 scale;
+	const char* geometryName;
+	
+	static const unsigned int Name_Length_Offset = 0;
+	static const unsigned int Position_Offset = 4; //Set to zero, ignoring name
+	static const unsigned int Rotation_Offset = 16;
+	static const unsigned int Scale_Offset = 28;
+	static const unsigned int Name_Pointer_Offset = 32;
 };
 
 struct MeshData
 {
-	/*Max Name length is 16*/
-	const char* shapeName;
 	unsigned int numberOfVerts;
 	unsigned int numberOfIndices;
 	unsigned int numberOfTransforms;
+	unsigned int nameLength;
 	Vertex* verts;
 	unsigned int* indices;
 	GeometryTransform* transforms;
-
+	const char* shapeName;
+	/*Name will be written here*/
+	//const char* name
 	
-	static const unsigned int Num_Of_Verts_Offset = 0;
+	static const unsigned int Num_Of_Verts_Offset = 0; //Ignore Name information
 	static const unsigned int Num_Of_Indices_Offset = 4;
 	static const unsigned int Num_Of_Transforms_Offset = 8;
-	static const unsigned int Vertex_Offset = 12;
-	static const unsigned int Indices_Offset = 16;
-	static const unsigned int Transforms_Offset = 20;
+	static const unsigned int Name_Length_Offset = 12;
+	static const unsigned int Vertex_Offset = 16;
+	static const unsigned int Indices_Offset = 20;
+	static const unsigned int Transforms_Offset = 24;
+	static const unsigned int Name_Offset = 28;
 };
 
 struct MeshDataHeader : Header
@@ -98,11 +103,12 @@ struct LightsHeader : Header
 //I'm not sure how to connect textures to mesh yet
 struct Texture
 {
-	const char* textureName;
+	unsigned int nameLength;
 	unsigned int textureDataLength;
-	void* textureData;
 	int width;
 	int height;
+	void* textureData;
+	const char* textureName;
 };
 
 struct TextureHeader : Header

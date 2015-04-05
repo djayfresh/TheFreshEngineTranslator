@@ -45,6 +45,7 @@ namespace Testing
 		{
 			MeshData meshes;
 			meshes.shapeName = "shape";
+			meshes.nameLength = strlen(meshes.shapeName);
 			meshes.numberOfIndices = indices;
 			meshes.numberOfTransforms = transforms;
 			meshes.numberOfVerts = verts;
@@ -101,6 +102,7 @@ namespace Testing
 		{
 			GeometryTransform transform;
 			transform.geometryName = name;
+			transform.nameLength = strlen(name);
 			transform.position = pos;
 			transform.rotation = rot;
 			transform.scale = scale;
