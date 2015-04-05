@@ -51,7 +51,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;FILEEXPORTER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>EXPORTING;WIN32;_DEBUG;_WINDOWS;_USRDLL;FILEEXPORTER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -78,6 +78,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ExportHeader.h" />
+    <ClInclude Include="FileHandler\FileExport.h" />
+    <ClInclude Include="FileIO\BinaryFileWriter.h" />
+    <ClInclude Include="FileIO\FileReader.h" />
+    <ClInclude Include="FileIO\FileWriter.h" />
+    <ClInclude Include="FileIO\Headers.h" />
+    <ClInclude Include="MathVector.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="FileIO\BinaryFileWriter.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

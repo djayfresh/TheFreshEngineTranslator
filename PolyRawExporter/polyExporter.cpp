@@ -63,7 +63,7 @@ MStatus polyExporter::writer(const MFileObject& file,
 		const MString fileName = file.fullName();
 	#endif
 
-	ofstream newFile(fileName.asChar(), ios::out);
+		ofstream newFile(fileName.asChar(), ios::out);
 	if (!newFile) {
 		MGlobal::displayError(fileName + ": could not be opened for reading");
 		return MS::kFailure;
