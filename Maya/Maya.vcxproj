@@ -94,11 +94,13 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);NT_PLUGIN;REQUIRE_IOSTREAM</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(SolutionDir)\FileExporter\Debug\;$(SolutionDir)\FileExporter\FileExporter;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Foundation.lib;OpenMaya.lib;OpenMayaUI.lib;OpenMayaAnim.lib;OpenMayaFX.lib;OpenMayaRender.lib;Image.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>FileExporter.lib;Foundation.lib;OpenMaya.lib;OpenMayaUI.lib;OpenMayaAnim.lib;OpenMayaFX.lib;OpenMayaRender.lib;Image.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/export:initializePlugin /export:uninitializePlugin %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(SolutionDir)\FileExporter\Debug\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -132,17 +134,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FileIO\BinaryFileWriter.cpp" />
     <ClCompile Include="hello.cpp" />
+    <ClCompile Include="MayaFileExporter.cpp" />
     <ClCompile Include="ShapeList.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="FileHandler\FileExport.h" />
-    <ClInclude Include="FileIO\BinaryFileWriter.h" />
-    <ClInclude Include="FileIO\FileReader.h" />
-    <ClInclude Include="FileIO\FileWriter.h" />
-    <ClInclude Include="FileIO\Headers.h" />
-    <ClInclude Include="MathVector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

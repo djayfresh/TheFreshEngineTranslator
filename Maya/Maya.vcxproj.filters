@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\FileIO">
-      <UniqueIdentifier>{6e47b4de-3838-49a7-97ed-cea20e7aaf9c}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hello.cpp">
@@ -24,28 +21,8 @@
     <ClCompile Include="ShapeList.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FileIO\BinaryFileWriter.cpp">
+    <ClCompile Include="MayaFileExporter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="FileIO\FileReader.h">
-      <Filter>Header Files\FileIO</Filter>
-    </ClInclude>
-    <ClInclude Include="FileIO\FileWriter.h">
-      <Filter>Header Files\FileIO</Filter>
-    </ClInclude>
-    <ClInclude Include="FileIO\Headers.h">
-      <Filter>Header Files\FileIO</Filter>
-    </ClInclude>
-    <ClInclude Include="FileIO\BinaryFileWriter.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="MathVector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="FileHandler\FileExport.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

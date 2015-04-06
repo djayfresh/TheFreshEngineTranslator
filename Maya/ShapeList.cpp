@@ -8,6 +8,7 @@
 #include <maya/MItDag.h>
 #include <maya/MPxTransformationMatrix.h>
 
+
 /**
 * When adding a kMesh iterator using inclusiveMatrix returns even Parented transforms to world space.
 * dag.name() is the mesh name (name'shape') not the transform name. This way shapes of the same mesh 

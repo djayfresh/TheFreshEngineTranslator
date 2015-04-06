@@ -1,6 +1,7 @@
 #ifndef FILE_READER_H
 #define FILE_READER_H
 
+#include "../ExportHeader.h"
 #include <iostream>
 #include <fstream>
 #include "Headers.h"
@@ -11,7 +12,7 @@
 
 #endif
 
-class FileReader
+class DLL_SHARED FileReader
 {
 public:
 	virtual FileHeader readFileHeader(std::ifstream& stream) = 0;
