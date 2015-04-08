@@ -8,7 +8,7 @@
 
 #include "../MathVector.h"
 
-enum DLL_SHARED HeaderTypes
+enum HeaderTypes
 {
 	Mesh = 0,
 	Lights,
@@ -17,13 +17,13 @@ enum DLL_SHARED HeaderTypes
 	Textures
 };
 
-struct DLL_SHARED Header
+struct Header
 {
 	Header(HeaderTypes type) : type((int)type) {}
 	int type;
 };
 
-struct DLL_SHARED Vertex
+struct Vertex
 {
 	vec3 position;
 	vec4 color;
@@ -35,7 +35,7 @@ struct DLL_SHARED Vertex
 	vec3 bitangent;
 };
 
-struct DLL_SHARED GeometryTransform
+struct GeometryTransform
 {
 	unsigned int nameLength;
 	vec3 position;
@@ -50,7 +50,7 @@ struct DLL_SHARED GeometryTransform
 	static const unsigned int Name_Pointer_Offset = 32;
 };
 
-struct DLL_SHARED MeshData
+struct MeshData
 {
 	unsigned int numberOfVerts;
 	unsigned int numberOfIndices;
@@ -73,7 +73,7 @@ struct DLL_SHARED MeshData
 	static const unsigned int Name_Offset = 28;
 };
 
-struct DLL_SHARED MeshDataHeader : Header
+struct MeshDataHeader : Header
 {
 	MeshDataHeader() : Header(Mesh), numberOfMeshes(0), meshes(NULL) {}
 	unsigned int numberOfMeshes;
@@ -84,7 +84,7 @@ struct DLL_SHARED MeshDataHeader : Header
 };
 
 
-struct DLL_SHARED Light
+struct Light
 {
 	vec3 position;
 	vec4 color;
@@ -93,7 +93,7 @@ struct DLL_SHARED Light
 	Light(vec3 position, vec4 color, float intensity) : position(position), color(color), intensity(intensity) {}
 };
 
-struct DLL_SHARED LightsHeader : Header
+struct LightsHeader : Header
 {
 	LightsHeader() : Header(Lights), numberOfLights(0), lights(NULL) {}
 	unsigned int numberOfLights;
@@ -101,7 +101,7 @@ struct DLL_SHARED LightsHeader : Header
 };
 
 //I'm not sure how to connect textures to mesh yet
-struct DLL_SHARED Texture
+struct Texture
 {
 	unsigned int nameLength;
 	unsigned int textureDataLength;
@@ -111,21 +111,21 @@ struct DLL_SHARED Texture
 	const char* textureName;
 };
 
-struct DLL_SHARED TextureHeader : Header
+struct TextureHeader : Header
 {
 	TextureHeader() : Header(Textures), numberOfTextures(0), textures(NULL) {}
 	unsigned int numberOfTextures;
 	Texture* textures;
 };
 
-struct DLL_SHARED  AdditionalHeader : Header
+struct AdditionalHeader : Header
 {
 	AdditionalHeader() : Header(Additional), numberOfAdditonalHeaders(0), headers(NULL) {}
 	unsigned int numberOfAdditonalHeaders;
 	Header** headers;
 };
 
-struct DLL_SHARED FileHeader
+struct FileHeader
 {
 	unsigned int fileType;
 	MeshDataHeader* meshes;

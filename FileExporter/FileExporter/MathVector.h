@@ -1,6 +1,5 @@
 #ifndef MATH_MAYA_H
 #define MATH_MAYA_H
-#include "ExportHeader.h"
 #include <iostream>
 
 #ifndef uint
@@ -11,7 +10,7 @@
 #define stringLength(string) strlen(string) + sizeof(char)
 #endif
 
-struct DLL_SHARED vec3
+struct vec3
 {
 	float x;
 	float y;
@@ -27,7 +26,7 @@ inline std::ostream& operator<<(std::ostream& ost, const vec3& vec)
 	return ost;
 }
 
-struct DLL_SHARED vec4
+struct vec4
 {
 	float x;
 	float y;
@@ -45,7 +44,7 @@ inline std::ostream& operator<<(std::ostream& ost, const vec4& vec)
 	return ost;
 }
 
-struct DLL_SHARED vec2
+struct vec2
 {
 	float x;
 	float y;

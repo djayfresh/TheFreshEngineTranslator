@@ -13,6 +13,7 @@
 
 #include "FileIO\BinaryFileWriter.h"
 #include <fstream>
+#include "ExportHeader.h"
 
 //Used to store UV set information
 //
@@ -137,7 +138,7 @@ Vertex* MayaFileExporter::getVertex(MFnMesh* fMesh, MStatus& status)
 	}
 
 	vec2* uvs = getUVs(fMesh, status, fCurrentUVSetName);
-
+	return new Vertex();
 }
 
 vec2* MayaFileExporter::getUVs(MFnMesh* fMesh, MStatus& status, MString currentUVSet)
