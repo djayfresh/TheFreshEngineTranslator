@@ -138,6 +138,9 @@
     <ClCompile Include="MayaFileExporter.cpp" />
     <ClCompile Include="ShapeList.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MayaFileExporter.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

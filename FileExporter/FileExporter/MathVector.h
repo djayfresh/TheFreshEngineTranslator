@@ -6,8 +6,9 @@
 #define uint unsigned int
 #endif
 
-#ifndef stringLength(string)
-#define stringLength(string) strlen(string) + sizeof(char)
+#ifndef stringLength
+#include <string.h>
+#define stringLength(string) (uint)(strlen(string) + sizeof(char))
 #endif
 
 struct vec3
