@@ -74,6 +74,7 @@
     <LibraryPath>C:\Program Files\Autodesk\Maya2012\lib;$(LibraryPath);$(VSInstallDir);$(VSInstallDir)lib\amd64</LibraryPath>
     <LinkIncremental>
     </LinkIncremental>
+    <OutDir>$(ProjectDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(VCInstallDir)atlmfc\include;$(WindowsSDK_IncludePath);C:\Program Files\Autodesk\Maya2012\include</IncludePath>
