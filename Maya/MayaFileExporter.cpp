@@ -5,6 +5,7 @@
 #include <maya/MDagPath.h>
 #include <maya/MFnDagNode.h>
 #include <maya/MFnLight.h>
+#include <maya/MItSelectionList.h>
 #include <maya/MPxTransformationMatrix.h>
 #include <vector>
 
@@ -258,16 +259,16 @@ uint* MayaFileExporter::getIndices(MFnMesh* fMesh, MStatus& status, uint& number
 	return indices;
 }
 
-MStatus MayaFileExporter::parseScene(bool selection)
+MStatus MayaFileExporter::parseScene()
 {
 	cleanUp();
 	MStatus status;
-	status = parseMeshes(selection);
+	status = parseMeshes();
 	if(!status && status != MStatus::kFailure)
 	{
 		MGlobal::displayError("Exporter::parseMeshes");
 	}
-	status = parseLights(selection);
+	status = parseLights();
 	if(!status && status != MStatus::kFailure)
 	{
 		MGlobal::displayError("Exporter::parseLights");
@@ -275,18 +276,17 @@ MStatus MayaFileExporter::parseScene(bool selection)
 	return status;
 }
 
-MStatus MayaFileExporter::parseMeshes(bool selection)
+MStatus MayaFileExporter::parseMeshes()
 {
 	MStatus status;
+
 	MItDag dag(MItDag::kDepthFirst, MFn::kMesh, &status);
 	if(!status)
 	{
 		status.perror("MItDag::dagIterator");
 		return status;
 	}
-	std::pair<const char*, MeshData*> pair;
-	MeshData* mesh;
-	MeshData* tmp;
+
 	for(;!dag.isDone(); dag.next())
 	{
 		MDagPath dagPath;
@@ -296,47 +296,50 @@ MStatus MayaFileExporter::parseMeshes(bool selection)
 			status.perror("MItDag::getPath");
 			continue;
 		}
-
-		MFnDagNode dagNode(dagPath, &status);
-		if(!status)
-		{
-			status.perror("MFnDagNode constructor");
-			continue;
-		}
-
-		cout << dagNode.name().asChar() << ": " << dagNode.typeName().asChar() << endl;
-		cout << " dagPath: " << dagPath.fullPathName().asChar() << endl;
-		cout << endl;
-		mesh = getMeshData(dagPath, status);
-		pair = std::make_pair(mesh->shapeName, mesh);
-		if(meshes.count(mesh->shapeName) > 0)
-		{
-			tmp = meshes[mesh->shapeName];
-			uint transformCount = tmp->numberOfTransforms + mesh->numberOfTransforms;
-			GeometryTransform* transform = new GeometryTransform[transformCount];
-			uint i;
-			for(i = 0; i < tmp->numberOfTransforms; i++)
-			{
-				transform[i] = tmp->transforms[i];
-			}
-			for(uint j = 0; j < mesh->numberOfTransforms && i < transformCount; j++, i++)
-			{
-				transform[i] = mesh->transforms[j];
-			}
-			delete tmp->transforms;
-			tmp->transforms = transform;
-			tmp->numberOfTransforms = transformCount;
-		}
-		else
-		{
-			meshes.emplace(pair);
-		}
+		parseMeshPath(dagPath, status);
 	}
 
 	return status;
 }
 
-MStatus MayaFileExporter::parseLights(bool selection)
+void MayaFileExporter::parseMeshPath(MDagPath& dagPath, MStatus& status)
+{
+	MFnDagNode dagNode(dagPath, &status);
+	if(!status)
+	{
+		status.perror("MFnDagNode constructor");
+	}
+
+	cout << dagNode.name().asChar() << ": " << dagNode.typeName().asChar() << endl;
+	cout << " dagPath: " << dagPath.fullPathName().asChar() << endl;
+	cout << endl;
+	MeshData* mesh = getMeshData(dagPath, status);
+	std::pair<const char*, MeshData*> pair = std::make_pair(mesh->shapeName, mesh);
+	if(meshes.count(mesh->shapeName) > 0)
+	{
+		MeshData* tmp = meshes[mesh->shapeName];
+		uint transformCount = tmp->numberOfTransforms + mesh->numberOfTransforms;
+		GeometryTransform* transform = new GeometryTransform[transformCount];
+		uint i;
+		for(i = 0; i < tmp->numberOfTransforms; i++)
+		{
+			transform[i] = tmp->transforms[i];
+		}
+		for(uint j = 0; j < mesh->numberOfTransforms && i < transformCount; j++, i++)
+		{
+			transform[i] = mesh->transforms[j];
+		}
+		delete tmp->transforms;
+		tmp->transforms = transform;
+		tmp->numberOfTransforms = transformCount;
+	}
+	else
+	{
+		meshes.emplace(pair);
+	}
+}
+
+MStatus MayaFileExporter::parseLights()
 {
 	MStatus status;
 	MItDag dag(MItDag::kDepthFirst, MFn::kLight, &status);
@@ -355,17 +358,64 @@ MStatus MayaFileExporter::parseLights(bool selection)
 			continue;
 		}
 
-		MFnDagNode dagNode(dagPath, &status);
+		parseLightPath(dagPath, status);
 		if(!status)
 		{
-			status.perror("MFnDagNode constructor");
+			status.perror("Lights: parseLightPath");
 			continue;
 		}
+	}
 
-		cout << dagNode.name().asChar() << ": " << dagNode.typeName().asChar() << endl;
-		cout << " dagPath: " << dagPath.fullPathName().asChar() << endl;
-		cout << endl;
-		lights.push_back(getLights(dagPath, status));
+	return status;
+}
+
+void MayaFileExporter::parseLightPath(MDagPath& dagPath, MStatus& status)
+{
+	MFnDagNode dagNode(dagPath, &status);
+	if(!status)
+	{
+		status.perror("MFnDagNode constructor");
+	}
+
+	cout << dagNode.name().asChar() << ": " << dagNode.typeName().asChar() << endl;
+	cout << " dagPath: " << dagPath.fullPathName().asChar() << endl;
+	cout << endl;
+	lights.push_back(getLights(dagPath, status));
+}
+
+
+MStatus MayaFileExporter::parseSelection()
+{
+	cleanUp();
+	MStatus status;
+	MSelectionList selectionList;
+	if (MStatus::kFailure == MGlobal::getActiveSelectionList(selectionList)) {
+		MGlobal::displayError("MGlobal::getActiveSelectionList");
+		return MStatus::kFailure;
+	}
+
+	MItSelectionList itSelectionList(selectionList, MFn::kMesh, &status);	
+	if (MStatus::kFailure == status) {
+		return MStatus::kFailure;
+	}
+
+	for (itSelectionList.reset(); !itSelectionList.isDone(); itSelectionList.next()) {
+		MDagPath dagPath;
+
+		//get the current dag path and process the poly mesh on it
+		//
+		if (MStatus::kFailure == itSelectionList.getDagPath(dagPath)) {
+			MGlobal::displayError("MItSelectionList::getDagPath");
+			return MStatus::kFailure;
+		}
+		if(dagPath.hasFn(MFn::kMesh))
+		{
+			parseMeshPath(dagPath, status);
+		}
+		if(dagPath.hasFn(MFn::kLight))
+		{
+			parseLightPath(dagPath, status);
+		}
 	}
 
 	return status;

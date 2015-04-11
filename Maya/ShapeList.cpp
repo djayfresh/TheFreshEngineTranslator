@@ -58,13 +58,13 @@ MStatus ShapeList::writer(const MFileObject& fileObject,const MString& optionsSt
 	file.open(fileName.asChar(), std::ios::binary | std::ios::out);
 	MayaFileExporter exporter(file);
 
-	/**
+	//**
 	if (MPxFileTranslator::kExportAccessMode == mode) {
-		if (MStatus::kFailure == exportAll(newFile)) {
+		if (MStatus::kFailure == exporter.parseScene()) {
 			return MStatus::kFailure;
 		}
 	} else if (MPxFileTranslator::kExportActiveAccessMode == mode) {
-		if (MStatus::kFailure == exportSelection(newFile)) {
+		if (MStatus::kFailure == exporter.parseSelection()) {
 			return MStatus::kFailure;
 		}
 	} else {
@@ -72,7 +72,7 @@ MStatus ShapeList::writer(const MFileObject& fileObject,const MString& optionsSt
 	}
 	/**/
 
-	status = exporter.parseScene();
+	
 	status = exporter.writeFile();
 	file.close();
 

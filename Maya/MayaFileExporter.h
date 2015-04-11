@@ -43,7 +43,8 @@ class MayaFileExporter
 public:
 	MayaFileExporter(std::ofstream& stream) : file(stream) {}
 
-	MStatus parseScene(bool selection = false);
+	MStatus parseScene();
+	MStatus parseSelection();
 	MStatus writeFile();
 private:
 	/*Scene Data Collection*/
@@ -56,8 +57,10 @@ private:
 	uint* getIndices(MFnMesh* mesh, MStatus& status, uint& numbeOfIndices);
 
 	/*Parsing Scene*/
-	MStatus parseMeshes(bool selection);
-	MStatus parseLights(bool selection);
+	MStatus parseMeshes();
+	void parseMeshPath(MDagPath& dagPath, MStatus& status);
+	MStatus parseLights();
+	void parseLightPath(MDagPath& dagpath, MStatus& status);
 
 	/*Headers*/
 	MeshDataHeader* createMeshHeader();
