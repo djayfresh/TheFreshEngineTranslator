@@ -15,18 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="hello.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ShapeList.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MayaFileExporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TheFreshEngineTranslator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MayaFileExporter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TheFreshEngineTranslator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

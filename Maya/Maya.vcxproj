@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DF2A082F-52C0-4E2F-96DE-3BE592CA6F52}</ProjectGuid>
     <RootNamespace>Maya</RootNamespace>
-    <ProjectName>MayaHelloWorld</ProjectName>
+    <ProjectName>TheFreshEngineExporter</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -139,12 +139,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="hello.cpp" />
     <ClCompile Include="MayaFileExporter.cpp" />
-    <ClCompile Include="ShapeList.cpp" />
+    <ClCompile Include="TheFreshEngineTranslator.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="MayaFileExporter.h" />
+    <ClInclude Include="TheFreshEngineTranslator.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
