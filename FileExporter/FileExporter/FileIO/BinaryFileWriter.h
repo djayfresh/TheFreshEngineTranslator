@@ -7,7 +7,6 @@
 class DLL_SHARED BinaryFileWriter : public FileWriter
 {
 public:
-
 	bool writeData(std::ofstream& stream,const FileHeader& data);
 	bool writeData(std::ofstream& stream,const MeshData& data);
 	bool writeData(std::ofstream& stream,const Light& data);

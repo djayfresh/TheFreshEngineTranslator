@@ -7,7 +7,8 @@
 #include <maya/MFnDagNode.h>
 #include <maya/MItDag.h>
 #include <maya/MPxTransformationMatrix.h>
-
+#include "MayaFileExporter.h"
+#include <fstream>
 
 /**
 * When adding a kMesh iterator using inclusiveMatrix returns even Parented transforms to world space.
@@ -25,7 +26,7 @@ public:
 	virtual MStatus	doIt ( const MArgList& )
 	{
 		cout.clear();
-		return doScan();;
+		return doScan();
 	}
 	MStatus doScan();
 	void printTransformData(const MDagPath& path);
@@ -42,39 +43,12 @@ MStatus ShapeList::doScan()
 	uint objectCount = 0;
 	MStatus status;
 
-	MItDag dagIterator(MItDag::kDepthFirst, MFn::kMesh, &status);
-	if(!status)
-	{
-		status.perror("MItDag::dagIterator");
-		return status;
-	}
-	for(;!dagIterator.isDone(); dagIterator.next())
-	{
-		MDagPath dagPath;
-		status = dagIterator.getPath(dagPath);
-		if(!status)
-		{
-			status.perror("MItDag::getPath");
-			continue;
-		}
+	std::ofstream file;
+	file.open("MayaTestFile.frh", std::ios::binary | std::ios::out);
+	MayaFileExporter exporter(file);
 
-		MFnDagNode dagNode(dagPath, &status);
-		if(!status)
-		{
-			status.perror("MFnDagNode constructor");
-			continue;
-		}
-
-		cout << dagNode.name().asChar() << ": " << dagNode.typeName().asChar() << endl;
-		cout << " dagPath: " << dagPath.fullPathName().asChar() << endl;
-		//**
-		printTransformData(dagPath);
-		//**/
-		cout << endl;
-		objectCount += 1;
-	}
-	cout << "ObjectCount: " << objectCount << endl;
-	cout.flush();
+	status = exporter.parseScene();
+	
 	return status;
 }
 
