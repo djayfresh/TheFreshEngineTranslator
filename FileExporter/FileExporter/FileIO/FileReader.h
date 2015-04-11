@@ -6,10 +6,8 @@
 #include <fstream>
 #include "Headers.h"
 
-#ifndef r_c(type,src)
-
+#ifndef r_c
 #define r_c(type,src) reinterpret_cast<type>(src)
-
 #endif
 
 class DLL_SHARED FileReader

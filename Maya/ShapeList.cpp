@@ -48,7 +48,7 @@ MStatus ShapeList::doScan()
 	MayaFileExporter exporter(file);
 
 	status = exporter.parseScene();
-	
+	status = exporter.writeFile();
 	return status;
 }
 

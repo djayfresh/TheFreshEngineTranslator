@@ -4,21 +4,21 @@
 
 bool BinaryFileWriter::writeData(std::ofstream& stream,const FileHeader& data)
 {
-	int fileStart = stream.tellp();
+	int fileStart = (int)stream.tellp();
 
 	/*Move to the end of the FileHeader*/
 	stream.seekp(fileStart + sizeof(FileHeader));
 
 	/*Write and store locations to each header*/
-	int meshDataP = stream.tellp();
+	int meshDataP = (int)stream.tellp();
 	writeData(stream, data.meshes);
-	int lightsP = stream.tellp();
+	int lightsP = (int)stream.tellp();
 	writeData(stream, data.lights);
-	int textureP = stream.tellp();
+	int textureP = (int)stream.tellp();
 	writeData(stream, data.textures);
-	int additonalP = stream.tellp();
+	int additonalP = (int)stream.tellp();
 	writeData(stream, data.additionalHeaders);
-	int fileEnd = stream.tellp();
+	int fileEnd = (int)stream.tellp();
 
 	FileHeader tmp(data.fileType, r_c(MeshDataHeader*,meshDataP), r_c(LightsHeader*,lightsP),
 		r_c(TextureHeader*, textureP), r_c(AdditionalHeader*, additonalP));
@@ -181,7 +181,7 @@ bool BinaryFileWriter::writeData(std::ofstream& stream,const TextureHeader& data
 		}
 	}
 
-	uint end = stream.tellp();
+	uint end = (uint)stream.tellp();
 
 	stream.seekp(headerStart);
 	stream.write(r_c(char*, &header), sizeof(TextureHeader));
@@ -216,7 +216,7 @@ bool BinaryFileWriter::writeData(std::ofstream& stream, Header* data)
 bool BinaryFileWriter::writeData(std::ofstream& stream,const AdditionalHeader& data)
 {
 	AdditionalHeader header = data;
-	uint headerStart = stream.tellp();
+	uint headerStart = (uint)stream.tellp();
 
 	stream.seekp(headerStart + sizeof(AdditionalHeader));
 

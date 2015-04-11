@@ -9,6 +9,8 @@
 #include <maya/MItDag.h>
 #include <maya/MFnMesh.h>
 
+
+#include "ExportHeader.h"
 #include "FileIO\BinaryFileWriter.h"
 #include <fstream>
 #include <vector>

@@ -130,7 +130,7 @@ Vertex* MayaFileExporter::getVertex(MFnMesh* fMesh, MStatus& status, uint& numbe
 	uint numberOfUVs;
 	vec2* uvs = getUVs(fMesh, status, fCurrentUVSetName, numberOfUVs);
 	Vertex* vertex = new Vertex[fVertexArray.length()];
-	for(int i =0; i < fVertexArray.length(); i++)
+	for(uint i =0; i < fVertexArray.length(); i++)
 	{
 		if(i <= numberOfUVs)
 		{
@@ -156,7 +156,7 @@ Vertex* MayaFileExporter::getVertex(MFnMesh* fMesh, MStatus& status, uint& numbe
 		//Colors
 		if(colorSetMissing)
 		{
-			vertex[i].color = vec4(fVertexArray[i].x, fVertexArray[i].y, fVertexArray[i].z, 1);
+			vertex[i].color = vec4((float)fVertexArray[i].x, (float)fVertexArray[i].y, (float)fVertexArray[i].z, 1);
 		}
 		else if(i <= fColorArray.length())
 		{
@@ -428,6 +428,9 @@ MStatus MayaFileExporter::writeFile()
 	writer.writeData(file, header);
 	file.flush();
 	file.close();
+
+	cleanup(header);
+	cleanUp();
 	return status;
 }
 
@@ -441,7 +444,7 @@ MeshDataHeader* MayaFileExporter::createMeshHeader()
 		mesh[i] = *meshes[it->first];
 	}
 	header->meshes = mesh;
-	header->numberOfMeshes = meshes.size();
+	header->numberOfMeshes = (uint)meshes.size();
 
 	return header;
 }
@@ -459,7 +462,7 @@ LightsHeader* MayaFileExporter::createLightsHeader()
 	}
 	LightsHeader* header = new LightsHeader();
 	header->lights = lightsList;
-	header->numberOfLights = lights.size();
+	header->numberOfLights = (uint)lights.size();
 	return header;
 }
 

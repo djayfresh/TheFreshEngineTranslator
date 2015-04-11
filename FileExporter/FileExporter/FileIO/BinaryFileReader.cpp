@@ -211,7 +211,7 @@ Header** BinaryFileReader::readHeader(std::ifstream& stream, const AdditionalHea
 		Header** headers = r_c(Header**, headerPrt);
 		char* headerTypes = new char[sizeof(uint)];
 		uint headerLocation;
-		for(int i = 0; i < header->numberOfAdditonalHeaders; i++)
+		for(uint i = 0; i < header->numberOfAdditonalHeaders; i++)
 		{
 			headerLocation = (uint)headers[i];
 			stream.seekg(headerLocation);

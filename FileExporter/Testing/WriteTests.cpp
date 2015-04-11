@@ -120,9 +120,9 @@ namespace Testing
 		Light* createLightsArray(int count)
 		{
 			Light* lights = new Light[count];
-			for(uint i = 0; i < count; i++)
+			for(int i = 0; i < count; i++)
 			{
-				lights[i].position = vec3(i, i, i);
+				lights[i].position = vec3(i * 1.0f, i * 1.0f, i * 1.0f);
 			}
 			return lights;
 		}
@@ -131,7 +131,7 @@ namespace Testing
 		{
 			Texture* textures = new Texture[count];
 
-			for(uint i =0; i < count; i++)
+			for(int i =0; i < count; i++)
 			{
 				textures[i].textureName = "AVeryCoolTexture.jpg";
 				textures[i].nameLength = stringLength(textures[i].textureName);
