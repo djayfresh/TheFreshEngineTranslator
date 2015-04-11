@@ -49,6 +49,7 @@ MStatus ShapeList::doScan()
 
 	status = exporter.parseScene();
 	status = exporter.writeFile();
+	file.close();
 	return status;
 }
 

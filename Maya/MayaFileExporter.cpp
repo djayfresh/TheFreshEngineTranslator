@@ -430,7 +430,7 @@ MStatus MayaFileExporter::writeFile()
 	file.close();
 
 	cleanup(header);
-	cleanUp();
+	//cleanUp();
 	return status;
 }
 
@@ -441,7 +441,7 @@ MeshDataHeader* MayaFileExporter::createMeshHeader()
 	uint i = 0;
 	for (std::map<const char*,MeshData*, cmp_str>::iterator it=meshes.begin(); it!=meshes.end();i++, ++it)
 	{
-		mesh[i] = *meshes[it->first];
+		memcpy(&mesh[i], meshes[it->first], sizeof(MeshData));
 	}
 	header->meshes = mesh;
 	header->numberOfMeshes = (uint)meshes.size();

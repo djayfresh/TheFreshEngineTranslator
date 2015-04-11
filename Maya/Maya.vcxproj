@@ -97,6 +97,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_WINDLL;%(PreprocessorDefinitions);NT_PLUGIN;REQUIRE_IOSTREAM</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)\FileExporter\Debug\;$(SolutionDir)\FileExporter\FileExporter;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <MinimalRebuild>false</MinimalRebuild>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
