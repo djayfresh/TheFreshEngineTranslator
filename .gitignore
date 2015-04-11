@@ -47,6 +47,8 @@ Thumbs.db
 *.tlog
 *.exp
 *.obj
+*/Debug
+*/x64
 
 
 # Qt Files/Library #
