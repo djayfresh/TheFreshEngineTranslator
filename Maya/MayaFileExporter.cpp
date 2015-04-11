@@ -258,16 +258,16 @@ uint* MayaFileExporter::getIndices(MFnMesh* fMesh, MStatus& status, uint& number
 	return indices;
 }
 
-MStatus MayaFileExporter::parseScene()
+MStatus MayaFileExporter::parseScene(bool selection)
 {
 	cleanUp();
 	MStatus status;
-	status = parseMeshes();
+	status = parseMeshes(selection);
 	if(!status && status != MStatus::kFailure)
 	{
 		MGlobal::displayError("Exporter::parseMeshes");
 	}
-	status = parseLights();
+	status = parseLights(selection);
 	if(!status && status != MStatus::kFailure)
 	{
 		MGlobal::displayError("Exporter::parseLights");
@@ -275,7 +275,7 @@ MStatus MayaFileExporter::parseScene()
 	return status;
 }
 
-MStatus MayaFileExporter::parseMeshes()
+MStatus MayaFileExporter::parseMeshes(bool selection)
 {
 	MStatus status;
 	MItDag dag(MItDag::kDepthFirst, MFn::kMesh, &status);
@@ -336,7 +336,7 @@ MStatus MayaFileExporter::parseMeshes()
 	return status;
 }
 
-MStatus MayaFileExporter::parseLights()
+MStatus MayaFileExporter::parseLights(bool selection)
 {
 	MStatus status;
 	MItDag dag(MItDag::kDepthFirst, MFn::kLight, &status);

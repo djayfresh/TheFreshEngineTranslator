@@ -1,12 +1,13 @@
 #include <maya/MString.h>
+#include <maya/MGlobal.h>
 #include <maya/MArgList.h>
 #include <maya/MFnPlugin.h>
-#include <maya/MPxCommand.h>
 #include <maya/MObject.h>
 #include <maya/MDagPath.h>
 #include <maya/MFnDagNode.h>
 #include <maya/MItDag.h>
 #include <maya/MPxTransformationMatrix.h>
+#include <maya/MPxFileTranslator.h>
 #include "MayaFileExporter.h"
 #include <fstream>
 
@@ -19,85 +20,129 @@
 * for future expansion, or new headers. Some types to consider our Lights and Cameras.
 /**/
 
-class ShapeList : public MPxCommand
+
+
+class ShapeList : public MPxFileTranslator
 {
 public:
-	~ShapeList() {};
-	virtual MStatus	doIt ( const MArgList& )
-	{
-		cout.clear();
-		return doScan();
-	}
-	MStatus doScan();
-	void printTransformData(const MDagPath& path);
-	static void* creator()
-	{
-		return new ShapeList;
-	}
-private:
-	MDagPath path;
+
+	MStatus	writer (const MFileObject& file,
+									const MString& optionsString,
+									MPxFileTranslator::FileAccessMode mode);
+	bool haveWriteMethod () const;
+	bool haveReadMethod () const;
+	bool canBeOpened () const;
+
+	MString defaultExtension () const;
+	
+	static void* creator();
+protected:
+	MStatus exportAll(ostream& os);
+	MStatus exportSelection(ostream& os);
 };
 
-MStatus ShapeList::doScan()
+MStatus ShapeList::writer(const MFileObject& fileObject,const MString& optionsString, MPxFileTranslator::FileAccessMode mode)
 {
 	uint objectCount = 0;
 	MStatus status;
 
+	#if defined (OSMac_)
+		char nameBuffer[MAXPATHLEN];
+		strcpy (nameBuffer, file.fullName().asChar());
+		const MString fileName(nameBuffer);
+	#else
+		const MString fileName = fileObject.fullName();
+	#endif
+
 	std::ofstream file;
-	file.open("MayaTestFile.frh", std::ios::binary | std::ios::out);
+	file.open(fileName.asChar(), std::ios::binary | std::ios::out);
 	MayaFileExporter exporter(file);
+
+	/**
+	if (MPxFileTranslator::kExportAccessMode == mode) {
+		if (MStatus::kFailure == exportAll(newFile)) {
+			return MStatus::kFailure;
+		}
+	} else if (MPxFileTranslator::kExportActiveAccessMode == mode) {
+		if (MStatus::kFailure == exportSelection(newFile)) {
+			return MStatus::kFailure;
+		}
+	} else {
+		return MStatus::kFailure;
+	}
+	/**/
 
 	status = exporter.parseScene();
 	status = exporter.writeFile();
 	file.close();
+
+	MGlobal::displayInfo("Export to " + fileName + " successful!");
 	return status;
 }
 
-void ShapeList::printTransformData(const MDagPath& path)
+bool ShapeList::haveWriteMethod () const
 {
-	//**
-	//This method simply determines the transformation information on the DAG node and prints it out.
-    MStatus status;
-	MMatrix transformNode = path.inclusiveMatrix(&status);
-    // This node has no transform - i.e., it’s the world node
-    if (!status && status.statusCode () == MStatus::kInvalidParameter)
-        return;
-	/**
-    MFnDagNode transform (transformNode, &status);
-    if (!status) {
-        status.perror("MFnDagNode constructor");
-        return;
-    }
-	//**/
-	MTransformationMatrix matrix (transformNode); //(transform.transformationMatrix())
-	MVector translation = matrix.translation(MSpace::kWorld);
-	cout << " translation: ["
-			<< translation.x << ", "
-            << translation.y << ", "
-            << translation.z << "]\n";
-    double threeDoubles[3];
-    MTransformationMatrix::RotationOrder rOrder;
-    matrix.getRotation (threeDoubles, rOrder, MSpace::kWorld);
-    cout << " rotation: ["
-            << threeDoubles[0] << ", "
-            << threeDoubles[1] << ", "
-            << threeDoubles[2] << "]\n";
-    matrix.getScale (threeDoubles, MSpace::kWorld);
-    cout << " scale: ["
-            << threeDoubles[0] << ", "
-            << threeDoubles[1] << ", "
-            << threeDoubles[2] << "]\n";
-	/**/
+	return true;
+}
+bool ShapeList::haveReadMethod () const
+{
+	return false;
+}
+bool ShapeList::canBeOpened () const
+{
+	return false;
 }
 
-MStatus initializePlugin( MObject _obj )	
+MString ShapeList::defaultExtension () const
 {
-	MFnPlugin plugin(_obj, "ShapeList", "1.0");
-	return plugin.registerCommand("ShapeList", ShapeList::creator);
+	return "frh";
 }
 
-MStatus uninitializePlugin(MObject _obj)
+void* ShapeList::creator()
 {
-	MFnPlugin plugin(_obj);
-	return plugin.deregisterCommand("ShapeList");
+	return new ShapeList();
+}
+
+MStatus initializePlugin(MObject obj)
+//Summary:	registers the commands, tools, devices, and so on, defined by the 
+//			plug-in with Maya
+//Returns:	MStatus::kSuccess if the registration was successful;
+//			MStatus::kFailure otherwise
+{
+	MStatus status;
+	MFnPlugin plugin(obj, "Doug Fresh", "0.5", "Any");
+
+	// Register the translator with the system
+	//
+	status =  plugin.registerFileTranslator("The Fresh Engine",
+											"",
+											ShapeList::creator,
+											"",
+											"option1=1",
+											true);
+	if (!status) {
+		status.perror("registerFileTranslator");
+		return status;
+	}
+
+	return status;
+}
+
+
+MStatus uninitializePlugin(MObject obj) 
+//Summary:	deregisters the commands, tools, devices, and so on, defined by the 
+//			plug-in
+//Returns:	MStatus::kSuccess if the deregistration was successful;
+//			MStatus::kFailure otherwise
+{
+	MStatus   status;
+	MFnPlugin plugin( obj );
+
+	status =  plugin.deregisterFileTranslator("The Fresh Engine");
+	if (!status) {
+		status.perror("deregisterFileTranslator");
+		return status;
+	}
+
+	return status;
 }
