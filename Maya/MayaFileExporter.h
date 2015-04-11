@@ -43,8 +43,8 @@ public:
 
 	MStatus parseScene();
 	MStatus writeFile();
-	MStatus cleanUp();
 private:
+	/*Scene Data Collection*/
 	MeshData* getMeshData(MDagPath& path, MStatus& status);
 	Light* getLights(MDagPath& path, MStatus& status);
 	Texture* getTexture(MDagPath& path, MStatus& status);
@@ -52,8 +52,20 @@ private:
 	Vertex* getVertex(MFnMesh* mesh, MStatus& status, uint& numberOfVerts);
 	vec2* getUVs(MFnMesh* mesh, MStatus& status, MString currentUVSetName, uint& numberOfUVs);
 	uint* getIndices(MFnMesh* mesh, MStatus& status, uint& numbeOfIndices);
+
+	/*Parsing Scene*/
 	MStatus parseMeshes();
 	MStatus parseLights();
+
+	/*Headers*/
+	MeshDataHeader* createMeshHeader();
+	AdditionalHeader* createAdditionalHeaders();
+	LightsHeader* createLightsHeader();
+	TextureHeader* createTextureHeader();
+
+	/*Cleanup*/
+	void cleanup(FileHeader& header);
+	MStatus cleanUp();
 private:
 	
 	std::map<const char*, MeshData*, cmp_str> meshes;

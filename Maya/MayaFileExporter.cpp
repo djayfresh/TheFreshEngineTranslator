@@ -262,6 +262,15 @@ MStatus MayaFileExporter::parseScene()
 	cleanUp();
 	MStatus status;
 	status = parseMeshes();
+	if(!status && status != MStatus::kFailure)
+	{
+		MGlobal::displayError("Exporter::parseMeshes");
+	}
+	status = parseLights();
+	if(!status && status != MStatus::kFailure)
+	{
+		MGlobal::displayError("Exporter::parseLights");
+	}
 	return status;
 }
 
@@ -361,15 +370,20 @@ MStatus MayaFileExporter::parseLights()
 	return status;
 }
 
+void deleteMeshData(MeshData* mesh)
+{
+	delete mesh->transforms;
+	delete mesh->verts;
+	delete mesh->indices;
+}
+
 MStatus MayaFileExporter::cleanUp()
 {
 	MeshData* mesh;
 	for (std::map<const char*,MeshData*, cmp_str>::iterator it=meshes.begin(); it!=meshes.end(); ++it)
 	{
 		mesh = meshes[it->first];
-		delete mesh->transforms;
-		delete mesh->verts;
-		delete mesh->indices;
+		deleteMeshData(mesh);
 		delete mesh;
 		meshes[it->first] = NULL;
 	}
@@ -398,4 +412,84 @@ Light* MayaFileExporter::getLights(MDagPath& path, MStatus& status)
 Texture* MayaFileExporter::getTexture(MDagPath& path, MStatus& status)
 {
 	return NULL;
+}
+
+MStatus MayaFileExporter::writeFile()
+{
+	MStatus status;
+	BinaryFileWriter writer;
+
+	FileHeader header;
+	header.fileType = 0;
+	header.meshes = createMeshHeader();
+	header.additionalHeaders = createAdditionalHeaders();
+	header.lights = createLightsHeader();
+	header.textures = createTextureHeader();
+	writer.writeData(file, header);
+	file.flush();
+	file.close();
+	return status;
+}
+
+MeshDataHeader* MayaFileExporter::createMeshHeader()
+{
+	MeshDataHeader* header = new MeshDataHeader();
+	MeshData* mesh = new MeshData[meshes.size()];
+	uint i = 0;
+	for (std::map<const char*,MeshData*, cmp_str>::iterator it=meshes.begin(); it!=meshes.end();i++, ++it)
+	{
+		mesh[i] = *meshes[it->first];
+	}
+	header->meshes = mesh;
+	header->numberOfMeshes = meshes.size();
+
+	return header;
+}
+AdditionalHeader* MayaFileExporter::createAdditionalHeaders()
+{
+	return new AdditionalHeader();
+}
+LightsHeader* MayaFileExporter::createLightsHeader()
+{
+	Light* lightsList = new Light[lights.size()];
+	uint i;
+	for(i = 0; i < lights.size(); i++)
+	{
+		lightsList[i] = *lights[i];
+	}
+	LightsHeader* header = new LightsHeader();
+	header->lights = lightsList;
+	header->numberOfLights = lights.size();
+	return header;
+}
+
+TextureHeader* MayaFileExporter::createTextureHeader()
+{
+	return new TextureHeader();
+}
+
+void MayaFileExporter::cleanup(FileHeader& header)
+{
+	uint i;
+	for(i = 0; i < header.meshes->numberOfMeshes; i++)
+	{
+		deleteMeshData(&header.meshes->meshes[i]);
+	}
+	if(header.meshes->meshes != NULL)
+	{
+		delete [] header.meshes->meshes;
+	}
+	if(header.lights->lights != NULL)
+	{
+		delete [] header.lights->lights;
+	}
+	if(header.additionalHeaders->headers != NULL)
+	{
+		delete [] header.additionalHeaders->headers;
+	}
+
+	delete header.meshes;
+	delete header.additionalHeaders;
+	delete header.lights;
+	delete header.textures;
 }
