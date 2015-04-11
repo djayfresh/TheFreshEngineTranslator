@@ -29,8 +29,6 @@ struct Vertex
 	vec4 color;
 	vec3 normal;
 	vec2 uv;
-	unsigned int boneID;
-	vec3 weights;
 	vec3 tangent;
 	vec3 bitangent;
 };
@@ -88,9 +86,9 @@ struct Light
 {
 	vec3 position;
 	vec4 color;
-	float intensity;
-	Light() : position(vec3()), color(vec4()), intensity(1) {}
-	Light(vec3 position, vec4 color, float intensity) : position(position), color(color), intensity(intensity) {}
+	vec4 intensity;
+	Light() : position(vec3()), color(vec4()), intensity(vec4()) {}
+	Light(vec3 position, vec4 color, vec4 intensity) : position(position), color(color), intensity(intensity) {}
 };
 
 struct LightsHeader : Header

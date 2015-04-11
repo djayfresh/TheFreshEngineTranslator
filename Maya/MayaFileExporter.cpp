@@ -4,6 +4,7 @@
 #include <maya/MGlobal.h>
 #include <maya/MDagPath.h>
 #include <maya/MFnDagNode.h>
+#include <maya/MFnLight.h>
 #include <maya/MPxTransformationMatrix.h>
 #include <vector>
 
@@ -407,7 +408,17 @@ MStatus MayaFileExporter::cleanUp()
 
 Light* MayaFileExporter::getLights(MDagPath& path, MStatus& status)
 {
-	return NULL;
+	Light* light = new Light();
+	MFnLight dag(path, &status);
+	if(!status)
+	{
+		status.perror("MFnLight constructor");
+	}
+	GeometryTransform* transform = getTransform(path, status);
+	light->position = transform->position;
+	light->intensity = toVec4(dag.lightIntensity(&status));
+	light->color = toVec4(dag.color());
+	return light;
 }
 Texture* MayaFileExporter::getTexture(MDagPath& path, MStatus& status)
 {
@@ -439,7 +450,8 @@ MeshDataHeader* MayaFileExporter::createMeshHeader()
 	MeshDataHeader* header = new MeshDataHeader();
 	MeshData* mesh = new MeshData[meshes.size()];
 	uint i = 0;
-	for (std::map<const char*,MeshData*, cmp_str>::iterator it=meshes.begin(); it!=meshes.end();i++, ++it)
+	std::map<const char*,MeshData*, cmp_str>::iterator it;
+	for (it=meshes.begin(); it!=meshes.end();i++, ++it)
 	{
 		memcpy(&mesh[i], meshes[it->first], sizeof(MeshData));
 	}
